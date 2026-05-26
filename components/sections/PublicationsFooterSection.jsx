@@ -2,8 +2,6 @@
 'use client'
 
 import { useEffect, useRef, Fragment } from 'react'
-import Image from 'next/image'
-import * as THREE from 'three'
 import { gsap } from '@/lib/gsap'
 import {
   FaGithub, FaLinkedinIn, FaMedium, FaInstagram, FaYoutube, FaEnvelope,
@@ -92,6 +90,7 @@ export default function PublicationsFooterSection() {
   // image
   const imageWrapRef    = useRef(null)
   const imageOverlayRef = useRef(null)
+  const walkingVideoRef = useRef(null)
 
   // publication content
   const pubContentRef = useRef(null)
@@ -104,30 +103,34 @@ export default function PublicationsFooterSection() {
   const interstitialRef = useRef(null)
 
   // footer
-  const canvasRef         = useRef(null)
-  const videoSrcRef       = useRef(null)
   const footerContentRef  = useRef(null)
   const leftRef         = useRef(null)
   const rightRef        = useRef(null)
   const bigNameRef      = useRef(null)
   const bottomBarRef    = useRef(null)
 
+  // Force-play the walking video (handles Vercel/browser autoplay edge cases)
+  useEffect(() => {
+    const v = walkingVideoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {
+      // Retry on first user interaction
+      const retry = () => { v.play().catch(() => {}); document.removeEventListener('click', retry) }
+      document.addEventListener('click', retry, { once: true })
+    })
+  }, [])
+
   useEffect(() => {
     const wrapper       = wrapperRef.current
     const sticky        = stickyRef.current
-    const canvas        = canvasRef.current
-    const videoEl       = videoSrcRef.current
     const scroller      = document.querySelector('main')
     if (!wrapper || !sticky || !scroller) return
 
     const isMobile = window.innerWidth < 768
 
-    let renderer, vidUni, rafId, videoPlaying = false
-    let onMouseMove = () => {}, onResize = () => {}
-
-    if (!isMobile && canvas && videoEl) {
-    // WebGL effect removed
-    }
+    let rafId
+    let onResize = () => {}
 
     // ── Publication entry animation ───────────────────────────
     let pubAnimDone = false
@@ -236,9 +239,7 @@ export default function PublicationsFooterSection() {
     return () => {
       if (rafId) cancelAnimationFrame(rafId)
       scroller.removeEventListener('scroll', onScroll)
-      sticky.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize', onResize)
-      if (renderer) renderer.dispose()
     }
   }, [])
 
@@ -248,32 +249,16 @@ export default function PublicationsFooterSection() {
     <div ref={wrapperRef} className={styles.wrapper}>
       <div ref={stickyRef} className={styles.sticky}>
 
-        {/* ── Video canvas removed ── */}
-
-        {/* ── Mobile background image (footer phase - mobile only) ── */}
-        <div className={styles.mobileFooterBg}>
-          <Image
-            src="/assets/footer-mobile.webp"
-            alt=""
-            fill
-            quality={100}
-            className={styles.mobileFooterBgImg}
-            sizes="100vw"
-            priority={false}
-          />
-        </div>
-
-        {/* ── Mobile permanent dark overlay - keeps image visually identical across all 3 sections ── */}
-        <div className={styles.mobileDarkOverlay} aria-hidden />
-
-        {/* ── Floating image: starts left, moves to center ── */}
+        {/* ── Floating image: starts full-width background → shrinks to centered ── */}
         <div ref={imageWrapRef} className={styles.imageWrap}>
           <video
+            ref={walkingVideoRef}
             src="/assets/jai-footer-walking.mp4"
             autoPlay
             loop
             muted
             playsInline
+            preload="auto"
             className={styles.imageEl}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
