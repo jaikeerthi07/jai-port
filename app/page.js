@@ -162,7 +162,7 @@ export default function Home() {
             duration: 0.5,
             ease: 'power2.out',
             onComplete: () => {
-              busyRef.current = false
+              setTimeout(() => { busyRef.current = false }, 50)
             }
           })
         }

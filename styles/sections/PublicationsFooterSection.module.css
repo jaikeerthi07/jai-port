@@ -637,12 +637,6 @@
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.5);
   display: inline-block;
-  animation: sunSpin 12s linear infinite;
-}
-
-@keyframes sunSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
 }
 
 /* ── Mobile hero layout (hidden on desktop) ──────────── */
