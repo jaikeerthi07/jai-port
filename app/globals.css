@@ -38,6 +38,9 @@
   --text-small: 0.72rem;
   --hero-role-size: clamp(0.75rem, 1.2vw, 0.875rem);
 
+  /* Centralized section height variable */
+  --section-h: 100vh;
+
   /* ─── shadcn var bridge (maps to brand tokens) ── */
   --background:   var(--surface-white);
   --foreground:   var(--text-primary);
@@ -73,6 +76,7 @@ main { scrollbar-width: none; -ms-overflow-style: none; }
 @media (max-width: 767px) {
   :root {
     --hero-name-size: clamp(3rem, 10vw, 5rem);
+    --section-h: 100svh;
   }
 
   /* Override inline 100vh - Chrome mobile toolbar hides bottom content */

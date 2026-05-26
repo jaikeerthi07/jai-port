@@ -53,7 +53,7 @@ export default function Navbar() {
   // Auto-hide on scroll-down, reveal on scroll-up or scroll-stop
   useEffect(() => {
     const scroller = document.querySelector('main') ?? window
-    const vh = window.innerHeight
+    const vh = scroller.clientHeight || window.innerHeight
 
     function showNavbar() {
       if (!hidden.current) return

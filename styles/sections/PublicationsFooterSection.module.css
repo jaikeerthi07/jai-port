@@ -1,21 +1,14 @@
 /* ── Outer wrapper (300vh - three scroll steps) ───────── */
 .wrapper {
-  height: 300vh;
+  height: calc(3 * var(--section-h));
   position: relative;
   z-index: 6;
 }
 
-@supports (height: 100svh) {
-  @media (max-width: 767px) {
-    .wrapper { height: 300svh; }
-  }
-}
-
-/* ── Sticky inner (100vh viewport-locked) ─────────────── */
 .sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: var(--section-h);
   overflow: hidden;
   background: #080808;
   display: flex;
@@ -771,7 +764,7 @@
 @media (max-width: 767px) {
   .glCanvas  { display: none; }
   .imageWrap { display: none; }
-  .sticky { height: 100svh; min-height: -webkit-fill-available; }
+  .sticky { height: var(--section-h); min-height: -webkit-fill-available; }
 
   /* pubContent has no background - mobileDarkOverlay provides uniform darkness beneath all sections */
 

@@ -1,8 +1,7 @@
-/* ── Section ─────────────────────────────────── */
 .section {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: var(--section-h);
   z-index: 4;
   background: #0d0d0d;
   overflow: hidden;
@@ -40,19 +39,17 @@
 .cSep { color: rgba(255, 255, 255, 0.22); }
 .cTot { color: rgba(255, 255, 255, 0.28); }
 
-/* ── Horizontal track ────────────────────────── */
 .track {
   display: flex;
-  height: 100vh;
+  height: var(--section-h);
   will-change: transform;
   position: relative;
   z-index: 1;
 }
 
-/* ── Single slide ────────────────────────────── */
 .slide {
   width: 100vw;
-  height: 100vh;
+  height: var(--section-h);
   flex-shrink: 0;
   position: relative;
   overflow: hidden;

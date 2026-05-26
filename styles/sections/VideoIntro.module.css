@@ -2,7 +2,7 @@
 .section {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: var(--section-h);
   z-index: 1;
   background: #050505;
   overflow: hidden;

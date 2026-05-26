@@ -2,7 +2,7 @@
 .section {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: var(--section-h);
   z-index: 2;
   background: linear-gradient(
     to bottom,
@@ -316,7 +316,7 @@
 /* ─── Responsive: Mobile < 768px ────────────────────────── */
 @media (max-width: 767px) {
   .section {
-    height: 100svh;
+    height: var(--section-h);
     min-height: -webkit-fill-available;
   }
 

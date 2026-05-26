@@ -1,7 +1,7 @@
 .section {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: var(--section-h);
   z-index: 3;
   background: #fff;
   display: grid;
@@ -198,7 +198,7 @@
   .section {
     grid-template-columns: 1fr;
     grid-template-rows: 60svh 1fr;
-    height: 100svh;
+    height: var(--section-h);
     min-height: -webkit-fill-available;
     overflow: hidden;
   }

@@ -98,7 +98,7 @@ export default function AboutSection() {
     resetAnim()
 
     function onScroll() {
-      const inRange = Math.abs(scroller.scrollTop - section.offsetTop) < window.innerHeight * 0.5
+      const inRange = Math.abs(scroller.scrollTop - section.offsetTop) < scroller.clientHeight * 0.5
       if (inRange && !isActive)  { isActive = true;  playAnim() }
       if (!inRange && isActive)  { isActive = false; resetAnim() }
     }

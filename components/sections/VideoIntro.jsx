@@ -11,7 +11,7 @@ const CinematicLayer = dynamic(() => import('@/components/three/CinematicLayer')
 
 function scrollNext() {
   const main = document.querySelector('main')
-  if (main) main.scrollTo({ top: window.innerHeight, behavior: 'smooth' })
+  if (main) main.scrollTo({ top: main.clientHeight, behavior: 'smooth' })
 }
 
 export default function VideoIntro() {
@@ -111,7 +111,7 @@ export default function VideoIntro() {
 
   function handleEnded() {
     const main = document.querySelector('main')
-    if (main && main.scrollTop < window.innerHeight * 0.4) scrollNext()
+    if (main && main.scrollTop < main.clientHeight * 0.4) scrollNext()
   }
 
   return (

@@ -73,14 +73,14 @@ export default function Home() {
 
       // Top → footer: fade-cut instead of scrolling forward through all sections
       if (idxRef.current === 0 && idx === TOTAL - 1) {
-        fadeLoop((TOTAL - 1) * window.innerHeight, TOTAL - 1)
+        fadeLoop((TOTAL - 1) * el.clientHeight, TOTAL - 1)
         return
       }
 
       idxRef.current = idx
       busyRef.current = true
 
-      let targetScrollTop = idx * window.innerHeight
+      let targetScrollTop = idx * el.clientHeight
       const maxScroll = el.scrollHeight - el.clientHeight
       if (targetScrollTop > maxScroll) {
         targetScrollTop = maxScroll
@@ -138,7 +138,7 @@ export default function Home() {
 
     function onScroll() {
       const currentScroll = el.scrollTop
-      idxRef.current = Math.round(currentScroll / window.innerHeight)
+      idxRef.current = Math.round(currentScroll / el.clientHeight)
 
       if (scrollTimeout) clearTimeout(scrollTimeout)
       if (busyRef.current || isTouchingRef.current) return
@@ -146,7 +146,7 @@ export default function Home() {
       scrollTimeout = setTimeout(() => {
         if (busyRef.current || isTouchingRef.current) return
 
-        let targetScrollTop = idxRef.current * window.innerHeight
+        let targetScrollTop = idxRef.current * el.clientHeight
         const maxScroll = el.scrollHeight - el.clientHeight
         if (targetScrollTop > maxScroll) {
           targetScrollTop = maxScroll
@@ -184,7 +184,7 @@ export default function Home() {
 
     function onResize() {
       if (busyRef.current) return
-      el.scrollTop = idxRef.current * window.innerHeight
+      el.scrollTop = idxRef.current * el.clientHeight
     }
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches
