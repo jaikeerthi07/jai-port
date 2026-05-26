@@ -3,13 +3,13 @@
 /* ─── Brand tokens ─────────────────────────────────────── */
 :root {
   /* Hero gradient - exact reference image */
-  --hero-start: #f8d5b0;
-  --hero-mid:   #f5954a;
-  --hero-end:   #e85500;
+  --hero-start: #f5eedc;
+  --hero-mid:   #d4af37;
+  --hero-end:   #947a26;
 
   /* Accent */
-  --accent:       #f7931e;
-  --accent-hover: #e07b10;
+  --accent:       #d4af37;
+  --accent-hover: #b8972e;
 
   /* Text */
   --text-primary: #1a0800;

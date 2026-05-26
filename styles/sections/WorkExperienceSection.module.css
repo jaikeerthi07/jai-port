@@ -35,7 +35,8 @@
 .bgImgEl {
   object-fit: cover;
   object-position: center;
-  opacity: 0.07;
+  z-index: 1;
+  opacity: 0.2;
 }
 
 /* ── Header ────────────────────────────────────── */
@@ -89,11 +90,11 @@
     90deg,
     transparent 0%,
     var(--accent) 6%,
-    rgba(247, 147, 30, 0.55) 50%,
-    rgba(247, 147, 30, 0.2) 94%,
+    rgba(212, 175, 55, 0.55) 50%,
+    rgba(212, 175, 55, 0.2) 94%,
     transparent 100%
   );
-  box-shadow: 0 0 12px rgba(247, 147, 30, 0.28);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.28);
   transform-origin: left center;
   pointer-events: none;
   z-index: 0;
@@ -130,8 +131,8 @@
   position: relative;
   z-index: 2;
   box-shadow:
-    0 0 0 6px rgba(247, 147, 30, 0.05),
-    0 0 22px rgba(247, 147, 30, 0.1);
+    0 0 0 6px rgba(212, 175, 55, 0.05),
+    0 0 22px rgba(212, 175, 55, 0.1);
 }
 
 /* Vertical connector - dot → card */
@@ -143,7 +144,7 @@
   transform: translateX(-50%);
   width: 2px;
   height: clamp(1rem, 2.5vh, 2rem);
-  background: linear-gradient(to bottom, rgba(247, 147, 30, 0.6), transparent);
+  background: linear-gradient(to bottom, rgba(212, 175, 55, 0.6), transparent);
 }
 
 .dotNum {
@@ -229,7 +230,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  border-left: 2px solid rgba(247, 147, 30, 0.2);
+  border-left: 2px solid rgba(212, 175, 55, 0.2);
   min-width: 0;
   overflow: hidden;
   max-height: 5rem; /* GSAP expands on hover */
@@ -255,9 +256,9 @@
   font-weight: 600;
   padding: 0.14rem 0.4rem;
   border-radius: 3px;
-  background: rgba(247, 147, 30, 0.07);
-  color: rgba(247, 147, 30, 0.8);
-  border: 1px solid rgba(247, 147, 30, 0.16);
+  background: rgba(212, 175, 55, 0.07);
+  color: rgba(212, 175, 55, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.16);
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
@@ -297,13 +298,21 @@
   }
 
   .dot::after { display: none; }
-
   .card { padding-top: 0; }
 
   .company  { font-size: 1.1rem; }
   .bullets  { max-height: none; overflow: visible; }
   .bullet   { font-size: 0.88rem; }
-  .stack    { display: none; }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.3rem;
+  }
+  .tag {
+    font-size: 0.65rem;
+    padding: 0.12rem 0.38rem;
+  }
 }
 
 /* ── Tablet (768–1023px) ────────────────────────── */

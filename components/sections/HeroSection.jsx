@@ -43,9 +43,8 @@ export default function HeroSection() {
   const socialRef      = useRef(null)
 
   function handleViewProjects() {
-    const scroller = document.querySelector('main')
-    if (scroller) {
-      gsap.to(scroller, { scrollTop: 3 * window.innerHeight, duration: 1.0, ease: 'power3.inOut' })
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('goto-section', { detail: { idx: 3 } }))
     }
   }
 
@@ -99,7 +98,7 @@ export default function HeroSection() {
       {/* Photo */}
       <div ref={photoRef} className={styles.photo}>
         <Image
-          src="/assets/hero.png" alt={profile.name.full}
+          src="/assets/hero-jai-new.png" alt={profile.name.full}
           fill priority quality={100}
           sizes="(min-width: 768px) 55vw, 100vw"
           className={styles.photoImg}

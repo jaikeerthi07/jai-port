@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { gsap } from '@/lib/gsap'
 import { FaGithub, FaLinkedinIn, FaMedium, FaInstagram, FaYoutube } from 'react-icons/fa'
@@ -19,10 +19,7 @@ export default function AboutSection() {
   const photoRef    = useRef(null)
   const contentRef  = useRef(null)
   const socialsRef  = useRef(null)
-  const intervalRef = useRef(null)
-
-  const [typed, setTyped] = useState(0)
-  const [done,  setDone]  = useState(false)
+  const typewriterTweenRef = useRef(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -34,7 +31,7 @@ export default function AboutSection() {
     let isActive = false
 
     function resetAnim() {
-      clearInterval(intervalRef.current)
+      typewriterTweenRef.current?.kill()
       gsap.killTweensOf(photoRef.current)
       gsap.killTweensOf(contentRef.current)
       const socialIcons = socialsRef.current?.querySelectorAll('a') ?? []
@@ -42,8 +39,12 @@ export default function AboutSection() {
       gsap.set(photoRef.current,   { opacity: 0, x: -50 })
       gsap.set(contentRef.current, { opacity: 0, y:  40 })
       gsap.set(socialIcons, { opacity: 0, y: 20 })
-      setTyped(0)
-      setDone(false)
+
+      // Reset character classes in the DOM directly
+      const charSpans = contentRef.current?.querySelectorAll('[data-char]') ?? []
+      for (let j = 0; j < charSpans.length; j++) {
+        charSpans[j].className = styles.untyped
+      }
     }
 
     function playAnim() {
@@ -53,15 +54,45 @@ export default function AboutSection() {
       const socialIcons = socialsRef.current?.querySelectorAll('a') ?? []
       gsap.to(socialIcons, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1, delay: 0.5 })
 
-      let i = 0
-      intervalRef.current = setInterval(() => {
-        i = Math.min(i + 6, BIO.length)
-        setTyped(i)
-        if (i >= BIO.length) {
-          clearInterval(intervalRef.current)
-          setDone(true)
+      const charSpans = contentRef.current?.querySelectorAll('[data-char]') ?? []
+      if (charSpans.length === 0) return
+
+      let activeIndex = -1
+      const progressObj = { value: 0 }
+
+      typewriterTweenRef.current = gsap.to(progressObj, {
+        value: charSpans.length,
+        duration: charSpans.length / 375,
+        ease: 'none',
+        delay: 0.3,
+        onUpdate: () => {
+          const currentIdx = Math.floor(progressObj.value)
+          if (currentIdx !== activeIndex) {
+            // Update previous activeIndex span to typed
+            if (activeIndex >= 0 && activeIndex < charSpans.length) {
+              charSpans[activeIndex].className = styles.typed
+            }
+            // Update intermediate spans if we skipped any
+            const start = Math.min(activeIndex + 1, currentIdx)
+            const end = Math.max(activeIndex + 1, currentIdx)
+            for (let j = start; j < currentIdx; j++) {
+              if (j >= 0 && j < charSpans.length) {
+                charSpans[j].className = styles.typed
+              }
+            }
+            // Update current span to lastTyped
+            if (currentIdx >= 0 && currentIdx < charSpans.length) {
+              charSpans[currentIdx].className = styles.lastTyped
+            }
+            activeIndex = currentIdx
+          }
+        },
+        onComplete: () => {
+          for (let j = 0; j < charSpans.length; j++) {
+            charSpans[j].className = styles.typed
+          }
         }
-      }, 16)
+      })
     }
 
     resetAnim()
@@ -74,7 +105,7 @@ export default function AboutSection() {
 
     scroller.addEventListener('scroll', onScroll, { passive: true })
     return () => {
-      clearInterval(intervalRef.current)
+      typewriterTweenRef.current?.kill()
       scroller.removeEventListener('scroll', onScroll)
     }
   }, [])
@@ -87,8 +118,8 @@ export default function AboutSection() {
         <div className={styles.photoWrap}>
           <div className={styles.photoFrame} data-about-photo>
             <Image
-              src="/assets/about.webp"
-              alt="Vaibhav Khushalani"
+              src="/assets/hero-section.png"
+              alt={profile.name.full}
               fill
               quality={100}
               sizes="(min-width: 768px) 30vw, 100vw"
@@ -137,11 +168,8 @@ export default function AboutSection() {
             {BIO.split('').map((char, i) => (
               <span
                 key={i}
-                className={
-                  i < typed
-                    ? (i === typed - 1 && !done ? styles.lastTyped : styles.typed)
-                    : styles.untyped
-                }
+                data-char
+                className={styles.untyped}
               >
                 {char}
               </span>

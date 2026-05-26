@@ -101,7 +101,23 @@
 .imageEl {
   object-fit: cover;
   object-position: center center;
-  filter: saturate(0.38) brightness(0.62);
+  filter: saturate(0.85) brightness(0.95);
+  animation: walkCycle 2.5s infinite ease-in-out;
+}
+
+@keyframes walkCycle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-8px);
+  }
 }
 
 /* Dark overlay so pub text is readable over background image */
@@ -237,8 +253,8 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  background: rgba(247, 147, 30, 0.08);
-  border: 1px solid rgba(247, 147, 30, 0.22);
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.22);
   padding: 0.13rem 0.42rem;
   border-radius: 3px;
   white-space: nowrap;
@@ -284,7 +300,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent);
-  border: 1px solid rgba(247, 147, 30, 0.38);
+  border: 1px solid rgba(212, 175, 55, 0.38);
   border-radius: 999px;
   padding: 0.22rem 0.6rem;
   white-space: nowrap;

@@ -22,11 +22,16 @@ export default function Home() {
   const busyRef        = useRef(false)
   const tweenRef       = useRef(null)
   const loopOverlayRef = useRef(null)
+  const isTouchingRef  = useRef(false)
   const [showLoader, setShowLoader] = useState(true)
 
   useEffect(() => {
     const el = mainRef.current
     if (!el) return
+
+    let lastDirection = 0
+    let lastTouchDir = 0
+    let scrollTimeout = null
 
     // Fade to black → instant scrollTop jump → fade in
     // Used whenever we loop footer → first section
@@ -53,12 +58,12 @@ export default function Home() {
       })
     }
 
-    function goTo(idx) {
+    function goTo(idx, force = false) {
       // Wrap-around
       if (idx >= TOTAL) idx = 0
       if (idx < 0)      idx = TOTAL - 1
 
-      if (idx === idxRef.current || busyRef.current) return
+      if (!force && (idx === idxRef.current || busyRef.current)) return
 
       // Footer → top: fade-cut instead of scrolling back through all sections
       if (idxRef.current === TOTAL - 1 && idx === 0) {
@@ -74,31 +79,94 @@ export default function Home() {
 
       idxRef.current = idx
       busyRef.current = true
+
+      let targetScrollTop = idx * window.innerHeight
+      const maxScroll = el.scrollHeight - el.clientHeight
+      if (targetScrollTop > maxScroll) {
+        targetScrollTop = maxScroll
+      }
+
       tweenRef.current?.kill()
       tweenRef.current = gsap.to(el, {
-        scrollTop: idx * window.innerHeight,
-        duration: 1.0,
-        ease: 'power3.inOut',
-        onComplete: () => { setTimeout(() => { busyRef.current = false }, 600) },
+        scrollTop: targetScrollTop,
+        duration: 0.7,
+        ease: 'power2.out',
+        onComplete: () => {
+          setTimeout(() => { busyRef.current = false }, 150)
+        },
       })
     }
 
     function onWheel(e) {
       e.preventDefault()
+      const dir = e.deltaY > 0 ? 1 : -1
+
+      if (busyRef.current && dir !== lastDirection) {
+        lastDirection = dir
+        goTo(idxRef.current + dir, true)
+        return
+      }
+
       if (busyRef.current) return
-      goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1))
+
+      lastDirection = dir
+      goTo(idxRef.current + dir)
     }
 
     let touchY = 0
-    function onTouchStart(e) { touchY = e.touches[0].clientY }
+    function onTouchStart(e) {
+      touchY = e.touches[0].clientY
+      isTouchingRef.current = true
+    }
     function onTouchEnd(e) {
+      isTouchingRef.current = false
       const dy = touchY - e.changedTouches[0].clientY
-      if (Math.abs(dy) < 40 || busyRef.current) return
-      goTo(idxRef.current + (dy > 0 ? 1 : -1))
+      if (Math.abs(dy) < 40) return
+
+      const dir = dy > 0 ? 1 : -1
+      if (busyRef.current && dir !== lastTouchDir) {
+        lastTouchDir = dir
+        goTo(idxRef.current + dir, true)
+        return
+      }
+
+      if (busyRef.current) return
+
+      lastTouchDir = dir
+      goTo(idxRef.current + dir)
     }
 
     function onScroll() {
-      idxRef.current = Math.round(el.scrollTop / window.innerHeight)
+      const currentScroll = el.scrollTop
+      idxRef.current = Math.round(currentScroll / window.innerHeight)
+
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      if (busyRef.current || isTouchingRef.current) return
+
+      scrollTimeout = setTimeout(() => {
+        if (busyRef.current || isTouchingRef.current) return
+
+        let targetScrollTop = idxRef.current * window.innerHeight
+        const maxScroll = el.scrollHeight - el.clientHeight
+        if (targetScrollTop > maxScroll) {
+          targetScrollTop = maxScroll
+        }
+
+        const diff = Math.abs(el.scrollTop - targetScrollTop)
+
+        if (diff > 5) {
+          busyRef.current = true
+          tweenRef.current?.kill()
+          tweenRef.current = gsap.to(el, {
+            scrollTop: targetScrollTop,
+            duration: 0.5,
+            ease: 'power2.out',
+            onComplete: () => {
+              busyRef.current = false
+            }
+          })
+        }
+      }, 150)
     }
 
     // Footer video ends → same fade-cut loop back to top
@@ -107,14 +175,30 @@ export default function Home() {
       fadeLoop(0, 0)
     }
 
+    function handleGotoSection(e) {
+      const targetIdx = e.detail?.idx
+      if (typeof targetIdx === 'number') {
+        goTo(targetIdx, true)
+      }
+    }
+
+    function onResize() {
+      if (busyRef.current) return
+      el.scrollTop = idxRef.current * window.innerHeight
+    }
+
     const isMobile = window.matchMedia('(max-width: 767px)').matches
 
     el.addEventListener('wheel',  onWheel,  { passive: false })
     el.addEventListener('scroll', onScroll, { passive: true  })
 
     let mTouchY = 0
-    function onMobileTouchStart(e) { mTouchY = e.touches[0].clientY }
+    function onMobileTouchStart(e) {
+      mTouchY = e.touches[0].clientY
+      isTouchingRef.current = true
+    }
     function onMobileTouchEnd(e) {
+      isTouchingRef.current = false
       const dy = mTouchY - e.changedTouches[0].clientY
       if (Math.abs(dy) < 40) return
       const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8
@@ -131,8 +215,11 @@ export default function Home() {
       el.addEventListener('touchend',   onMobileTouchEnd,   { passive: true })
     }
     window.addEventListener('footer-loop-back', onFooterLoop)
+    window.addEventListener('goto-section', handleGotoSection)
+    window.addEventListener('resize', onResize)
 
     return () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout)
       el.removeEventListener('wheel',  onWheel)
       el.removeEventListener('scroll', onScroll)
       if (!isMobile) {
@@ -143,6 +230,8 @@ export default function Home() {
         el.removeEventListener('touchend',   onMobileTouchEnd)
       }
       window.removeEventListener('footer-loop-back', onFooterLoop)
+      window.removeEventListener('goto-section', handleGotoSection)
+      window.removeEventListener('resize', onResize)
       tweenRef.current?.kill()
     }
   }, [])
@@ -167,7 +256,7 @@ export default function Home() {
       />
 
       <Navbar />
-      <main ref={mainRef} style={{ height: '100vh', overflowY: 'scroll', overscrollBehavior: 'none' }}>
+      <main ref={mainRef} style={{ height: '100vh', overflowY: showLoader ? 'hidden' : 'scroll', overscrollBehavior: 'none' }}>
         <div>
           <VideoIntro />
           <HeroSection />

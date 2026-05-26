@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = 'Vaibhav Khushalani | Full Stack Developer'
+export const alt = 'Jaikeerthi | Full Stack Developer'
 
 export const size = {
   width: 1200,
@@ -12,7 +12,7 @@ export const size = {
 
 export const contentType = 'image/png'
 
-const ACCENT = '#f7931e'
+const ACCENT = '#d4af37'
 const photoUrl = `${SITE_URL}/assets/about.webp`
 
 export default function Image() {
@@ -222,7 +222,7 @@ export default function Image() {
             src={photoUrl}
             width={420}
             height={630}
-            alt="Vaibhav Khushalani"
+            alt="Jaikeerthi"
             style={{
               objectFit: 'cover',
             }}

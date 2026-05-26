@@ -80,8 +80,9 @@ function easeInOut(t) {
 }
 
 function handleViewProjects() {
-  const scroller = document.querySelector('main')
-  if (scroller) gsap.to(scroller, { scrollTop: 3 * window.innerHeight, duration: 1.0, ease: 'power3.inOut' })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('goto-section', { detail: { idx: 3 } }))
+  }
 }
 
 export default function PublicationsFooterSection() {
@@ -125,78 +126,7 @@ export default function PublicationsFooterSection() {
     let onMouseMove = () => {}, onResize = () => {}
 
     if (!isMobile && canvas && videoEl) {
-      // ── Three.js video setup ────────────────────────────────
-      const W = sticky.offsetWidth
-      const H = sticky.offsetHeight
-
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false })
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      renderer.setSize(W, H)
-      renderer.setClearColor(0x000000, 0)
-
-      const scene  = new THREE.Scene()
-      const camera = new THREE.OrthographicCamera(-W / 2, W / 2, H / 2, -H / 2, 0.1, 100)
-      camera.position.z = 10
-
-      videoEl.src       = '/assets/footer-video.mp4'
-      videoEl.muted     = true
-      videoEl.playsInline = true
-      videoEl.loop      = true
-      videoEl.preload   = 'auto'
-
-      const vidTex = new THREE.VideoTexture(videoEl)
-      vidTex.minFilter = THREE.LinearFilter
-      vidTex.magFilter = THREE.LinearFilter
-
-      vidUni = {
-        uVideo:       { value: vidTex },
-        uOpacity:     { value: 0 },
-        uVideoAspect: { value: 16 / 9 },
-        uCanvasAspect: { value: W / H },
-      }
-      videoEl.addEventListener('loadedmetadata', () => {
-        if (videoEl.videoWidth && videoEl.videoHeight)
-          vidUni.uVideoAspect.value = videoEl.videoWidth / videoEl.videoHeight
-      }, { once: true })
-      const vidMat = new THREE.ShaderMaterial({
-        uniforms: vidUni,
-        vertexShader: VID_VERT,
-        fragmentShader: VID_FRAG,
-        transparent: true,
-      })
-      const vidMesh = new THREE.Mesh(new THREE.PlaneGeometry(W * 1.08, H * 1.08), vidMat)
-      vidMesh.position.z = 1
-      scene.add(vidMesh)
-
-      const mx = { tx: 0, ty: 0, x: 0, y: 0 }
-      onMouseMove = function(e) {
-        const r = sticky.getBoundingClientRect()
-        mx.tx = (e.clientX - r.left) / r.width  - 0.5
-        mx.ty = (e.clientY - r.top)  / r.height - 0.5
-      }
-      sticky.addEventListener('mousemove', onMouseMove)
-
-      onResize = function() {
-        const w = sticky.offsetWidth
-        const h = sticky.offsetHeight
-        renderer.setSize(w, h)
-        camera.left   = -w / 2; camera.right  = w / 2
-        camera.top    =  h / 2; camera.bottom = -h / 2
-        camera.updateProjectionMatrix()
-        vidUni.uCanvasAspect.value = w / h
-      }
-      window.addEventListener('resize', onResize)
-
-      function tick() {
-        rafId = requestAnimationFrame(tick)
-        mx.x += (mx.tx - mx.x) * 0.04
-        mx.y += (mx.ty - mx.y) * 0.04
-        vidMesh.position.x = mx.x * 14
-        vidMesh.position.y = mx.y * -8
-        vidTex.needsUpdate = true
-        renderer.render(scene, camera)
-      }
-      tick()
+    // WebGL effect removed
     }
 
     // ── Publication entry animation ───────────────────────────
@@ -204,22 +134,22 @@ export default function PublicationsFooterSection() {
 
     function resetPubAnim() {
       pubAnimDone = false
-      gsap.set(labelRef.current,   { opacity: 0, y: -16, rotateX: 40, transformPerspective: 500, transformOrigin: '50% 0%' })
-      gsap.set(headingRef.current, { opacity: 0, y: -30, rotateX: 35, transformPerspective: 700, transformOrigin: '50% 0%' })
+      gsap.set(labelRef.current,   { opacity: 0, y: -16 })
+      gsap.set(headingRef.current, { opacity: 0, y: -30 })
       gsap.set(dividerRef.current, { scaleX: 0, transformOrigin: 'left center' })
       itemRefs.current.forEach(el => {
-        if (el) gsap.set(el, { opacity: 0, y: 28, rotateX: 18, transformPerspective: 900, transformOrigin: '50% 0%' })
+        if (el) gsap.set(el, { opacity: 0, y: 28 })
       })
     }
 
     function playPubAnim() {
       if (pubAnimDone) return
       pubAnimDone = true
-      gsap.to(labelRef.current,   { opacity: 1, y: 0, rotateX: 0, duration: 0.55, ease: 'power3.out' })
-      gsap.to(headingRef.current, { opacity: 1, y: 0, rotateX: 0, duration: 0.75, ease: 'expo.out', delay: 0.08 })
+      gsap.to(labelRef.current,   { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' })
+      gsap.to(headingRef.current, { opacity: 1, y: 0, duration: 0.75, ease: 'expo.out', delay: 0.08 })
       gsap.to(dividerRef.current, { scaleX: 1, duration: 0.7, ease: 'power2.inOut', delay: 0.25 })
       itemRefs.current.forEach((el, i) => {
-        if (el) gsap.to(el, { opacity: 1, y: 0, rotateX: 0, duration: 0.6, ease: 'power3.out', delay: 0.32 + i * 0.1 })
+        if (el) gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', delay: 0.32 + i * 0.1 })
       })
     }
 
@@ -286,17 +216,8 @@ export default function PublicationsFooterSection() {
         const xfadeRaw = Math.max(0, Math.min(1, (p - 0.65) / 0.27))
         const xfade    = 0.5 - 0.5 * Math.cos(Math.PI * xfadeRaw)
 
-        gsap.set(imageWrapRef.current, { width: w, x: centerX, opacity: 1 - xfade })
-        vidUni.uOpacity.value = xfade
-
-        if (xfade > 0.04 && !videoPlaying) {
-          videoPlaying = true
-          videoEl.play().catch(() => {})
-        } else if (xfade <= 0.04 && videoPlaying) {
-          videoPlaying = false
-          videoEl.pause()
-          videoEl.currentTime = 0
-        }
+        gsap.set(imageWrapRef.current, { width: w, x: centerX, opacity: 1 })
+        // WebGL opacity update removed
       }
 
       // ── Footer text fades in ──────────────────────────────
@@ -327,9 +248,7 @@ export default function PublicationsFooterSection() {
     <div ref={wrapperRef} className={styles.wrapper}>
       <div ref={stickyRef} className={styles.sticky}>
 
-        {/* ── Video canvas (footer background - desktop) ── */}
-        <canvas ref={canvasRef} className={styles.glCanvas} />
-        <video ref={videoSrcRef} className={styles.hiddenVideo} />
+        {/* ── Video canvas removed ── */}
 
         {/* ── Mobile background image (footer phase - mobile only) ── */}
         <div className={styles.mobileFooterBg}>
@@ -349,14 +268,14 @@ export default function PublicationsFooterSection() {
 
         {/* ── Floating image: starts left, moves to center ── */}
         <div ref={imageWrapRef} className={styles.imageWrap}>
-          <Image
-            src="/assets/footer.png"
-            alt=""
-            fill
-            quality={100}
+          <video
+            src="/assets/jai-footer-walking.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
             className={styles.imageEl}
-            sizes="(max-width: 767px) 100vw, 50vw"
-            priority={false}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
           <div ref={imageOverlayRef} className={styles.imageOverlay} />
         </div>
@@ -367,7 +286,7 @@ export default function PublicationsFooterSection() {
 
           <div className={styles.pubHero}>
             <p  ref={labelRef}   className={styles.label}>Research &amp; Writing</p>
-            <h2 ref={headingRef} className={styles.heading}>Publications</h2>
+            <h2 ref={headingRef} className={styles.heading}>Achievements</h2>
           </div>
 
           <div ref={dividerRef} className={styles.divider} />
@@ -458,7 +377,7 @@ export default function PublicationsFooterSection() {
             </h2>
             <p className={styles.mobileDesc}>{profile.description}</p>
             <div className={styles.mobileCtas}>
-              <a href={`mailto:${profile.email}`} className={styles.mobileTalkBtn}>
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLScBTyGGY4K7ef6ShbUjmt1EAlnuUCleR1LpQmUosyZB-1Bzpg/viewform?usp=header" target="_blank" rel="noopener noreferrer" className={styles.mobileTalkBtn}>
                 Let&apos;s talk <FiArrowUpRight />
               </a>
             </div>
@@ -519,9 +438,9 @@ export default function PublicationsFooterSection() {
                     </span>
                   ))}
                 </div>
-                <a href={`mailto:${profile.email}`} className={styles.footerMail}>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScBTyGGY4K7ef6ShbUjmt1EAlnuUCleR1LpQmUosyZB-1Bzpg/viewform?usp=header" target="_blank" rel="noopener noreferrer" className={styles.footerMail}>
                   <FaEnvelope size={12} />
-                  {profile.email}
+                  Contact Form
                 </a>
               </div>
             </div>
@@ -537,7 +456,7 @@ export default function PublicationsFooterSection() {
                   ))}
                   <span className={styles.ctaAccent}>{content.footer.ctaAccent}</span>
                 </p>
-                <a href={`mailto:${profile.email}`} className={styles.talkBtn}>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScBTyGGY4K7ef6ShbUjmt1EAlnuUCleR1LpQmUosyZB-1Bzpg/viewform?usp=header" target="_blank" rel="noopener noreferrer" className={styles.talkBtn}>
                   Let&apos;s talk →
                 </a>
               </div>

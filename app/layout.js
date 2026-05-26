@@ -29,13 +29,13 @@ const dancing = Dancing_Script({
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Vaibhav Khushalani | Full Stack Developer',
-    template: '%s | Vaibhav Khushalani',
+    default: 'Jaikeerthi | Full Stack Developer',
+    template: '%s | Jaikeerthi',
   },
   description:
     'Full Stack Engineer with 4+ years building scalable web and AI-powered systems using MERN, Next.js, and Python. Available worldwide for collaborations.',
   keywords: [
-    'Vaibhav Khushalani',
+    'Jaikeerthi',
     'Full Stack Developer',
     'Software Engineer',
     'MERN Stack',
@@ -46,14 +46,14 @@ export const metadata = {
     'Portfolio',
     'India',
   ],
-  authors: [{ name: 'Vaibhav Khushalani', url: SITE_URL }],
-  creator: 'Vaibhav Khushalani',
+  authors: [{ name: 'Jaikeerthi', url: SITE_URL }],
+  creator: 'Jaikeerthi',
   openGraph: {
     type: 'website',
     locale: 'en_IN',
     url: SITE_URL,
-    siteName: 'Vaibhav Khushalani',
-    title: 'Vaibhav Khushalani | Full Stack Developer',
+    siteName: 'Jaikeerthi',
+    title: 'Jaikeerthi | Full Stack Developer',
     description:
       'Full Stack Engineer with 4+ years building scalable web and AI-powered systems using MERN, Next.js, and Python. Available worldwide for collaborations.',
     images: [
@@ -61,13 +61,13 @@ export const metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Vaibhav Khushalani | Full Stack Developer Portfolio',
+        alt: 'Jaikeerthi | Full Stack Developer Portfolio',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Vaibhav Khushalani | Full Stack Developer',
+    title: 'Jaikeerthi | Full Stack Developer',
     description:
       'Full Stack Engineer with 4+ years building scalable web and AI-powered systems using MERN, Next.js, and Python. Available worldwide for collaborations.',
     images: ['/opengraph-image'],
@@ -117,7 +117,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Person',
-              name: 'Vaibhav Khushalani',
+              name: 'Jaikeerthi',
               url: SITE_URL,
               email: 'vaibhavkhush124@gmail.com',
               jobTitle: 'Full Stack Developer',

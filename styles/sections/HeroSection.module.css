@@ -102,6 +102,7 @@
   gap: 4rem;
   cursor: default;
   --hero-name-size: clamp(4rem, 8vw, 9rem);
+  max-width: 44vw;
 }
 
 .greeting {
@@ -148,7 +149,7 @@
 /* ─── Tag Pills ──────────────────────────────────────────── */
 .pills {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem;
   margin-top: 0.8rem;
@@ -165,7 +166,7 @@
   padding: 0.65rem 1.5rem;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  flex: 1;
+  flex: 0 0 auto;
   text-align: center;
 }
 

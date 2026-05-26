@@ -12,14 +12,15 @@ import profile from '@/data/profile.json'
 import styles from '@/styles/ui/Navbar.module.css'
 import { FaBars, FaTimes } from 'react-icons/fa'
 
-// idx matches snap position in page.js (0=video,1=hero,2=about,3-4=projects,5=work-exp,6=publications,7=footer)
+// Dynamic idx matches snap position in page.js based on project count
+const PROJECT_SLIDES = profile.projects.length
 const NAV_ITEMS = [
   { label: 'Home',         idx: 0 },
   { label: 'About',        idx: 2 },
   { label: 'Projects',     idx: 3 },
-  { label: 'Experience',   idx: 5 },
-  { label: 'Publications', idx: 6 },
-  { label: 'Contact',      idx: 7 },
+  { label: 'Experience',   idx: 3 + PROJECT_SLIDES },
+  { label: 'Achievements', idx: 3 + PROJECT_SLIDES + 1 },
+  { label: 'Contact',      idx: 3 + PROJECT_SLIDES + 3 },
 ]
 
 function getIST() {
@@ -101,12 +102,7 @@ export default function Navbar() {
                 <NavigationMenuLink
                   className={styles.navLink}
                   onClick={() => {
-                    const scroller = document.querySelector('main')
-                    if (scroller) gsap.to(scroller, {
-                      scrollTop: idx * window.innerHeight,
-                      duration: 1.0,
-                      ease: 'power3.inOut',
-                    })
+                    window.dispatchEvent(new CustomEvent('goto-section', { detail: { idx } }))
                   }}
                   style={{ cursor: 'pointer' }}
                 >
@@ -118,10 +114,10 @@ export default function Navbar() {
         </NavigationMenu>
 
         <a
-          href={`mailto:${profile.email}`}
+          href="https://docs.google.com/forms/d/e/1FAIpQLScBTyGGY4K7ef6ShbUjmt1EAlnuUCleR1LpQmUosyZB-1Bzpg/viewform?usp=header" target="_blank" rel="noopener noreferrer"
           className={`${styles.emailBtn} rounded-full text-xs font-semibold px-5 h-8`}
         >
-          Email me
+          Let's Talk
         </a>
 
         <button
@@ -140,12 +136,7 @@ export default function Navbar() {
               key={label}
               className={styles.mobileNavLink}
               onClick={() => {
-                const scroller = document.querySelector('main')
-                if (scroller) gsap.to(scroller, {
-                  scrollTop: idx * window.innerHeight,
-                  duration: 1.0,
-                  ease: 'power3.inOut',
-                })
+                window.dispatchEvent(new CustomEvent('goto-section', { detail: { idx } }))
                 setMenuOpen(false)
               }}
             >
@@ -153,11 +144,11 @@ export default function Navbar() {
             </button>
           ))}
           <a
-            href={`mailto:${profile.email}`}
+            href="https://docs.google.com/forms/d/e/1FAIpQLScBTyGGY4K7ef6ShbUjmt1EAlnuUCleR1LpQmUosyZB-1Bzpg/viewform?usp=header" target="_blank" rel="noopener noreferrer"
             className={styles.mobileMailLink}
             onClick={() => setMenuOpen(false)}
           >
-            {profile.email}
+            Let's Talk
           </a>
         </div>
       )}
